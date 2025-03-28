@@ -11,6 +11,7 @@ const { app, server } = require("./socket/Socket");
 
 app.use(express.json());
 app.use(cors({ origin: process.env.REACT_APP_URL, credentials: true })); // Adjust for frontend origin
+app.options("*", cors());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
