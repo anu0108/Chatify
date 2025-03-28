@@ -11,7 +11,19 @@ const { app, server } = require("./socket/Socket");
 
 const allowedOrigins = ["https://chatify-talks.vercel.app", "http://localhost:5173"];
 app.use(cors({ origin: allowedOrigins, credentials: true })); // Adjust for frontend origin
-app.options("*", cors()); 
+// app.options("*", cors()); 
+
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+      res.header("Access-Control-Allow-Origin", "https://chatify-talks.vercel.app");
+      res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      res.header("Access-Control-Allow-Credentials", "true");
+      return res.status(204).send(); // No content for OPTIONS requests
+    }
+    next();
+  });
+  
 app.use(express.json());
 
 app.use(cookieParser());
