@@ -32,7 +32,7 @@ type User = {
   
     const checkAuthStatus = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/auth/me`, { withCredentials: true });
+        const res = await axios.get(`/auth/me`, { withCredentials: true });
         console.log(res.data)
         setAuthUser(res.data.user);
       } catch (error) {

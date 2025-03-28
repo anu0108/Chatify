@@ -25,7 +25,7 @@ const Sidebar = () => {
     useEffect(() => {
         const getConversations = async () => {
             try {
-                const res = await axios.get<User[]>(`${backendUrl}/users`, { withCredentials: true });
+                const res = await axios.get<User[]>(`/users`, { withCredentials: true });
                 setConversations(res.data);
             } catch (err) {
                 console.error("Error fetching users:", err);
@@ -52,7 +52,7 @@ const Sidebar = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post(`${backendUrl}/auth/logout`, {}, { withCredentials: true });
+            await axios.post(`/auth/logout`, {}, { withCredentials: true });
             setAuthUser(null);
             navigate("/login");
         } catch (err) {
