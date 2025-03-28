@@ -9,7 +9,7 @@ const userRoutes = require("./routes/UserRoutes");
 
 const { app, server } = require("./socket/Socket");
 
-app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
+app.use(cors({ origin: ['https://chatify-talks.vercel.app','http://localhost:5173'], credentials: true }));
 app.use(express.json());
 
 app.use(cookieParser());
