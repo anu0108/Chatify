@@ -38,8 +38,9 @@ module.exports.Register = async (req, res) => {
 
         res.cookie("jwt", token, {
             maxAge: 1000 * 60 * 60 * 24 * 3,
-            httpOnly: true, 
-            secure: true, 
+            withCredentials:true,
+            httpOnly: false,
+            secure: true,
             sameSite: "none",
         });
 
@@ -76,7 +77,8 @@ module.exports.Login = async (req, res) => {
 
         res.cookie("jwt", token, {
             maxAge: 1000 * 60 * 60 * 24 * 3,
-            httpOnly: true,
+            withCredentials:true,
+            httpOnly: false,
             secure: true,
             sameSite: "none",
         });
