@@ -18,6 +18,11 @@ app.get("/", (req, res) => {
     res.status(200).json({ message: "Server is up and running!" });
 });
 
+app.get("/debug", (req, res) => {
+    res.status(200).json({ status: "✅ API is running on Vercel!" });
+});
+
+
 
 app.use("/auth", authRoutes);
 app.use("/message", messageRoutes)
