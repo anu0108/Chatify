@@ -12,14 +12,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobile] = useState("");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(`${backendUrl}/auth/register`, {
+      const res = await axios.post(`/auth/register`, {
         name,
         email,
         password,

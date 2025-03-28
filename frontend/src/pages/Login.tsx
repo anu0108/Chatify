@@ -12,7 +12,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const {setAuthUser} = useAuthContext()
 
@@ -21,7 +20,7 @@ const Login = () => {
     
 
     try {
-      const res = await axios.post(`${backendUrl}/auth/login`, {
+      const res = await axios.post(`/auth/login`, {
         email,
         password,
       }, {
