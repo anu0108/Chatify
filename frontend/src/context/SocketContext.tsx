@@ -26,6 +26,7 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
   useEffect(() => {
     if (authUser) {
       const newSocket = io(`${backendUrl}`, {
+        withCredentials:true,
         query: { userId: authUser._id },
         transports:["websocket"]
       });

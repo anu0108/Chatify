@@ -5,21 +5,14 @@ const express = require("express");
 
 const app = express();
 const server = http.createServer(app);
-const allowedOrigins = ["https://chatify-talks.vercel.app", "http://localhost:5173"];
 
 const io = new Server(server, {
 	cors: {
-	  origin: (origin, callback) => {
-		if (!origin || allowedOrigins.includes(origin)) {
-		  callback(null, origin);
-		} else {
-		  callback(new Error("CORS not allowed"));
-		}
-	  },
-	  credentials: true,
+		origin: [process.env.REACT_APP_URL],
+		methods: ["GET", "POST"],
+		credentials: true
 	},
-	allowEIO3: true, // Enables cross-origin WebSockets
-  });
+});
 
 const userSocketMap = {}; // { userId: socketId }
 
