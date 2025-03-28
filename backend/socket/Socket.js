@@ -5,10 +5,11 @@ const express = require("express");
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = ["https://chatify-talks.vercel.app", "http://localhost:5173"];
 
 const io = new Server(server, {
 	cors: {
-		origin: [process.env.REACT_APP_URL],
+		origin: allowedOrigins,
 		methods: ["GET", "POST"],
 	},
 });
