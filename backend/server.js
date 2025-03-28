@@ -10,9 +10,9 @@ const userRoutes = require("./routes/UserRoutes");
 const { app, server } = require("./socket/Socket");
 
 const allowedOrigins = ["https://chatify-talks.vercel.app", "http://localhost:5173"];
-
-app.use(express.json());
 app.use(cors({ origin: allowedOrigins, credentials: true })); // Adjust for frontend origin
+app.options("*", cors()); 
+app.use(express.json());
 
 app.use(cookieParser());
 
