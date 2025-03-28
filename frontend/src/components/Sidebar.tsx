@@ -14,7 +14,6 @@ const Sidebar = () => {
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const { authUser, setAuthUser } = useAuthContext();
     const navigate = useNavigate();
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     interface User {
         _id: string;

@@ -24,7 +24,6 @@ type User = {
   export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [authUser, setAuthUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
       checkAuthStatus();
