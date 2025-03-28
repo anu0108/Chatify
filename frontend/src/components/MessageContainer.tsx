@@ -12,7 +12,6 @@ import moment from "moment";
 
 const MessageContainer = () => {
     const [message, setMessage] = useState<string>("");
-    const { authUser } = useAuthContext()
     const { selectedConversation, setSelectedConversation } = useConversation();
 
     const { sendMessage } = useSendMessage();

@@ -1,9 +1,6 @@
 import { useAuthContext } from "../context/AuthContext";
 import { extractTime } from "../utils/extractTime";
-import useConversation from "../zustand/useConversation";
-import MyImage from "../assets/Anurag.png"
-import { BiUser } from "react-icons/bi";
-import { FaRegUserCircle } from "react-icons/fa";
+
 interface MessageType {
     _id: string;
     senderId: string;
@@ -18,7 +15,6 @@ interface MessageProps {
 
 const Message = ({ message }: MessageProps) => {
     const { authUser } = useAuthContext();
-    const { selectedConversation } = useConversation();
 
     const fromMe = message.senderId === authUser?._id;
     const formattedTime = extractTime(message.createdAt);
