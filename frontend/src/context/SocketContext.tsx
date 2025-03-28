@@ -21,11 +21,10 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const { authUser } = useAuthContext();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (authUser) {
-      const newSocket = io(`${backendUrl}`, {
+      const newSocket = io("https://chatify-b02k.onrender.com/", {
         withCredentials:true,
         query: { userId: authUser._id },
         transports:["websocket"]
