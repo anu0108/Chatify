@@ -37,11 +37,10 @@ module.exports.Register = async (req, res) => {
         );
 
         res.cookie("jwt", token, {
-            maxAge: 1000 * 60 * 60 * 24 * 3,
-            withCredentials:true,
-            httpOnly: false,
+            maxAge: 15 * 24 * 60 * 60 * 1000, // MS
+            httpOnly: true, // prevent XSS attacks cross-site scripting attacks
+            sameSite: "strict", // CSRF attacks cross-site request forgery attacks
             secure: true,
-            sameSite: "none",
         });
 
         res.status(201).json({ success: true, message: "User Registered Successfully!" });
@@ -76,11 +75,10 @@ module.exports.Login = async (req, res) => {
         );
 
         res.cookie("jwt", token, {
-            maxAge: 1000 * 60 * 60 * 24 * 3,
-            withCredentials:true,
-            httpOnly: false,
+            maxAge: 15 * 24 * 60 * 60 * 1000, // MS
+            httpOnly: true, // prevent XSS attacks cross-site scripting attacks
+            sameSite: "strict", // CSRF attacks cross-site request forgery attacks
             secure: true,
-            sameSite: "none",
         });
 
         res.status(200).json({ success: true, message: "Login successful", user:foundUser });
