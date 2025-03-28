@@ -24,6 +24,7 @@ type User = {
   export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [authUser, setAuthUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
       checkAuthStatus();
@@ -31,7 +32,7 @@ type User = {
   
     const checkAuthStatus = async () => {
       try {
-        const res = await axios.get(`/auth/me`, { withCredentials: true });
+        const res = await axios.get(`${backendUrl}/auth/me`, { withCredentials: true });
         console.log(res.data)
         setAuthUser(res.data.user);
       } catch (error) {

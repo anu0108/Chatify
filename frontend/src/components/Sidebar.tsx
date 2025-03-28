@@ -14,6 +14,7 @@ const Sidebar = () => {
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const { authUser, setAuthUser } = useAuthContext();
     const navigate = useNavigate();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     interface User {
         _id: string;
@@ -24,7 +25,7 @@ const Sidebar = () => {
     useEffect(() => {
         const getConversations = async () => {
             try {
-                const res = await axios.get<User[]>(`/users`, { withCredentials: true });
+                const res = await axios.get<User[]>(`${backendUrl}/users`, { withCredentials: true });
                 setConversations(res.data);
             } catch (err) {
                 console.error("Error fetching users:", err);
@@ -51,7 +52,7 @@ const Sidebar = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post(`/auth/logout`, {}, { withCredentials: true });
+            await axios.post(`${backendUrl}/auth/logout`, {}, { withCredentials: true });
             setAuthUser(null);
             navigate("/login");
         } catch (err) {
