@@ -14,17 +14,22 @@ const Login = () => {
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const {setAuthUser} = useAuthContext()
+  const { setAuthUser } = useAuthContext()
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
 
     try {
       const res = await axios.post(`${backendUrl}/auth/login`, {
         email,
         password,
       }, {
+        headers: {
+          "x-vercel-protection-bypass": import.meta.env.VITE_VERCEL_AUTOMATION_BYPASS_SECRET,
+          "Content-Type": "application/json",
+        },
         withCredentials: true
       });
 

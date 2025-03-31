@@ -16,6 +16,8 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+    console.log("secret", import.meta.env.VITE_VERCEL_AUTOMATION_BYPASS_SECRET)
+
     interface User {
         _id: string;
         name: string;
@@ -25,7 +27,13 @@ const Sidebar = () => {
     useEffect(() => {
         const getConversations = async () => {
             try {
-                const res = await axios.get<User[]>(`${backendUrl}/users`, { withCredentials: true });
+                const res = await axios.get<User[]>(`${backendUrl}/users`, {
+                    headers: {
+                        "x-vercel-protection-bypass": import.meta.env.VITE_VERCEL_AUTOMATION_BYPASS_SECRET,
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true
+                });
                 setConversations(res.data);
             } catch (err) {
                 console.error("Error fetching users:", err);
@@ -115,7 +123,7 @@ const Sidebar = () => {
             <div className="mt-6 text-white flex-col">
                 {filteredConversations.length > 0 ? (
                     filteredConversations.map((user, idx) => (
-                        <Conversation key={user._id} user={user} lastIdx={idx==filteredConversations.length - 1}/>
+                        <Conversation key={user._id} user={user} lastIdx={idx == filteredConversations.length - 1} />
                     ))
                 ) : (
                     <p className="text-center text-white mt-5">No conversations found.</p>

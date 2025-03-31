@@ -25,6 +25,10 @@ const Register = () => {
         password,
         mobile,
       }, {
+        headers: {
+          "x-vercel-protection-bypass": import.meta.env.VITE_VERCEL_AUTOMATION_BYPASS_SECRET,
+          "Content-Type": "application/json",
+      },
         withCredentials: true
       });
 
