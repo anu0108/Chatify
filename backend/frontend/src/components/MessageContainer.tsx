@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
 import Avatar from "../assets/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg"
 import { TiMessages } from "react-icons/ti";
-import useConversation from "../zustand/useConversation";
-import { useAuthContext } from "../context/AuthContext";
+import useConversation from "../zustand/useConversation.ts";
+import { useAuthContext } from "../context/AuthContext.tsx";
 import useSendMessage from "../hooks/useSendMessage.ts"
 import useGetMessages from "../hooks/useGetMessages.ts";
 import Message from "./Message.tsx";
