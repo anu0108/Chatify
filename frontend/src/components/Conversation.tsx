@@ -7,6 +7,7 @@ interface ConversationProps {
         _id: string;
         name: string;
         email: string;
+        createdAt: string;
     };
     lastIdx: boolean;
 }

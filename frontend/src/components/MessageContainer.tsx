@@ -21,14 +21,14 @@ const MessageContainer = () => {
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    
+
     useEffect(() => {
         const storedConversation = localStorage.getItem("selectedConversation");
         if (storedConversation) {
             setSelectedConversation(JSON.parse(storedConversation));
         }
     }, []);
-    
+
 
 
 
@@ -40,8 +40,8 @@ const MessageContainer = () => {
 
     useEffect(() => {
         // Scroll to the bottom when messages change
-        if(messagesEndRef.current)
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (messagesEndRef.current)
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,9 +80,6 @@ const MessageContainer = () => {
 
     const groupedMessages = groupMessagesByDate();
 
-    console.log("groupedMe", groupedMessages)
-
-
     return (
         <div className="w-2/3 flex flex-col justify-between">
             {!selectedConversation ? <NoChatSelected /> :
@@ -91,21 +88,28 @@ const MessageContainer = () => {
                         <img src={Avatar} alt="" className="w-10 h-10 object-cover rounded-full" />
                         <div>
                             <p className="text-gray-900 text-sm">{selectedConversation.name}</p>
-                            <p className="text-gray-900 text-xs">Last Seen : Today</p>
+                            {/* Add Last Seen here <p className="text-gray-900 text-xs">Last Seen : Today</p> */}
+                            <p className="text-gray-600 text-xs">
+                                Joined: {new Date(selectedConversation.createdAt).toLocaleDateString("en-US", {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                })}
+                            </p>
                         </div>
                     </div>
 
                     {/* Messages */}
                     <div className="bg-white border-t border-gray-200 h-full p-4 overflow-y-auto inline-grid flex-col-reverse">
                         <div className="flex flex-col justify-end h-full">
-                        {Object.entries(groupedMessages).map(([date, messages]) => (
-                            <div key={date}>
-                                <div className="text-center text-gray-500 text-xs my-2">{date}</div>
-                                {messages.map((msg : any) => (
-                                    <Message key={msg._id} message={msg} />
-                                ))}
-                            </div>
-                        ))}
+                            {Object.entries(groupedMessages).map(([date, messages]) => (
+                                <div key={date}>
+                                    <div className="text-center text-gray-500 text-xs my-2">{date}</div>
+                                    {messages.map((msg: any) => (
+                                        <Message key={msg._id} message={msg} />
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                         <div ref={messagesEndRef} />
                     </div>
@@ -120,7 +124,7 @@ const MessageContainer = () => {
                             onChange={(e) => setMessage(e.target.value)}
                             className="bg-gray-200 text-sm w-full p-3 rounded-lg outline-none"
                             placeholder="Type your message..."
-                            
+
                         />
                         <button
                             className="ml-2 text-blue-500 text-lg" type="submit"
