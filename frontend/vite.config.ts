@@ -6,22 +6,14 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      // Proxy API requests starting with `/api` to your backend server
-      '/auth': {
-        target: 'http://localhost:8080', // your backend URL
-        changeOrigin: true,
-        secure: false,
+      '/auth': { target: 'http://localhost:8080', changeOrigin: true },
+      '/users': { target: 'http://localhost:8080', changeOrigin: true },
+      '/message': { target: 'http://localhost:8080', changeOrigin: true },
+      '/socket.io': { 
+        target: 'http://localhost:8080', 
+        changeOrigin: true, 
+        ws: true  // enable websocket proxying
       },
-      '/users': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
-      '/message': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      }
     }
   }
 })
