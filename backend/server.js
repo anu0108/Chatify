@@ -38,9 +38,9 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-// app.get("/", (req, res) => {
-//     res.status(200).json({ message: "Server is up and running!" });
-// });
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Server is up and running!" });
+});
 
 
 app.use("/auth", authRoutes);

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { IoSend } from "react-icons/io5";
-import Avatar from "../assets/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg"
 import { TiMessages } from "react-icons/ti";
 import useConversation from "../zustand/useConversation";
 import { useAuthContext } from "../context/AuthContext";
@@ -9,6 +8,7 @@ import useGetMessages from "../hooks/useGetMessages.ts";
 import Message from "./Message.tsx";
 import useListenMessages from "../hooks/useListenMessages.ts";
 import moment from "moment";
+import InitialAvatar from "../utils/initialAvatar.tsx";
 
 const MessageContainer = () => {
     const [message, setMessage] = useState<string>("");
@@ -85,10 +85,9 @@ const MessageContainer = () => {
             {!selectedConversation ? <NoChatSelected /> :
                 <>
                     <div className="my-2 mx-2 flex gap-2">
-                        <img src={Avatar} alt="" className="w-10 h-10 object-cover rounded-full" />
+                        <InitialAvatar  name={selectedConversation.name}/>
                         <div>
                             <p className="text-gray-900 text-sm">{selectedConversation.name}</p>
-                            {/* Add Last Seen here <p className="text-gray-900 text-xs">Last Seen : Today</p> */}
                             <p className="text-gray-600 text-xs">
                                 Joined: {new Date(selectedConversation.createdAt).toLocaleDateString("en-US", {
                                     day: "numeric",
