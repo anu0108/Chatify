@@ -23,7 +23,6 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
   const { authUser } = useAuthContext();
 
   const url = "http://localhost:8080"
-  const url1 = "https://chatify-b02k.onrender.com/"
 
   useEffect(() => {
     if (authUser) {
