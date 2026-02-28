@@ -10,10 +10,10 @@ const userRoutes = require("./routes/UserRoutes");
 
 const { app, server } = require("./socket/Socket");
 
-app.use(cors({
-    origin: 'http://localhost:5173', // Vite's default port
-    credentials: true,              // Allow cookies
-  }));
+// app.use(cors({
+//     origin: 'http://localhost:5173', // Vite's default port
+//     credentials: true,              // Allow cookies
+//   }));
 
 app.use(express.json());
 
@@ -29,11 +29,11 @@ app.use("/message", messageRoutes)
 app.use("/users", userRoutes)
 
 
-// app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-// app.get("*", (req, res) => {
-// 	res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-// });
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 mongoose.connect(process.env.MONGO_DB_URI)
 
