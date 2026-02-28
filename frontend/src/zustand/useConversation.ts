@@ -4,6 +4,7 @@ interface Conversation {
     _id: string;
     name: string;
     email: string
+    createdAt: string
 }
 
 interface Message {

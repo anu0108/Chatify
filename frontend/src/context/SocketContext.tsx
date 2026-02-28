@@ -22,9 +22,12 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const { authUser } = useAuthContext();
 
+  const url = "http://localhost:8080"
+  const url1 = "https://chatify-b02k.onrender.com/"
+
   useEffect(() => {
     if (authUser) {
-      const newSocket = io("https://chatify-b02k.onrender.com/", {
+      const newSocket = io(url, {
         withCredentials:true,
         query: { userId: authUser._id },
         transports:["websocket"]

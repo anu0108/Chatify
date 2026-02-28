@@ -6,20 +6,24 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import Conversation from './Conversation';
+import { LogOut, Settings, User, Users, Bell } from 'lucide-react';
+
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+    createdAt: string;
+}
 
 const Sidebar = () => {
     const [search, setSearch] = useState("");
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
+    const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
     const [conversations, setConversations] = useState<User[]>([]);
-    const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const avatarDropdownRef = useRef<HTMLDivElement | null>(null);
+    const kebabDropdownRef = useRef<HTMLDivElement | null>(null);
     const { authUser, setAuthUser } = useAuthContext();
     const navigate = useNavigate();
-
-    interface User {
-        _id: string;
-        name: string;
-        email: string;
-    }
 
     useEffect(() => {
         const getConversations = async () => {
@@ -30,17 +34,18 @@ const Sidebar = () => {
                 console.error("Error fetching users:", err);
             }
         };
-
         getConversations();
     }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
+            if (avatarDropdownRef.current && !avatarDropdownRef.current.contains(event.target as Node)) {
+                setIsAvatarDropdownOpen(false);
+            }
+            if (kebabDropdownRef.current && !kebabDropdownRef.current.contains(event.target as Node)) {
+                setIsKebabDropdownOpen(false);
             }
         };
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -59,69 +64,143 @@ const Sidebar = () => {
         }
     };
 
+    const getInitials = (name: string) =>
+        name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "U";
+
     return (
         <div className="bg-gray-100 h-full w-1/3 rounded py-2 px-4">
-            <div className="flex items-center w-full justify-between">
-                <div className="flex gap-4 items-center mt-1">
-                    <img src={UserLoggedIn} alt="" className="w-12 h-12 object-cover rounded-full cursor-pointer"
-                        onClick={() => setIsDropdownOpen((prev) => !prev)}
+
+            {/* Top bar */}
+            <div className="flex items-center w-full justify-between mt-1">
+
+                {/* Avatar + dropdown */}
+                <div className="relative" ref={avatarDropdownRef}>
+                    <img
+                        src={UserLoggedIn}
+                        alt="avatar"
+                        className="w-11 h-11 object-cover rounded-full cursor-pointer ring-2 ring-blue-400 hover:ring-blue-600 transition-all"
+                        onClick={() => {
+                            setIsAvatarDropdownOpen((prev) => !prev);
+                            setIsKebabDropdownOpen(false);
+                        }}
                     />
+
+                    {isAvatarDropdownOpen && (
+                        <div className="absolute left-0 top-14 z-20 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                            {/* Header */}
+                            <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                    {getInitials(authUser?.name || "")}
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-gray-900 font-semibold text-sm truncate">{authUser?.name || "User"}</p>
+                                    <p className="text-gray-400 text-xs truncate">{authUser?.email || "email@example.com"}</p>
+                                </div>
+                            </div>
+
+                            {/* Links */}
+                            <div className="py-1">
+                                <Link
+                                    to="/profile"
+                                    onClick={() => setIsAvatarDropdownOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                                >
+                                    <User size={15} className="text-gray-400" />
+                                    My Profile
+                                </Link>
+                                <Link
+                                    to="/settings"
+                                    onClick={() => setIsAvatarDropdownOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                                >
+                                    <Settings size={15} className="text-gray-400" />
+                                    Settings
+                                </Link>
+                            </div>
+
+                            <div className="border-t border-gray-100 py-1">
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-red-50 text-sm text-red-500 transition-colors"
+                                >
+                                    <LogOut size={15} />
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
-                <div className=" flex gap-4 items-center">
-                    <CiMenuKebab className="text-black text-xl font-bold cursor-pointer hover:text-gray-300" />
+
+                {/* Kebab + dropdown */}
+                <div className="relative" ref={kebabDropdownRef}>
+                    <button
+                        className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                        onClick={() => {
+                            setIsKebabDropdownOpen((prev) => !prev);
+                            setIsAvatarDropdownOpen(false);
+                        }}
+                    >
+                        <CiMenuKebab className="text-gray-600 text-xl" />
+                    </button>
+
+                    {isKebabDropdownOpen && (
+                        <div className="absolute right-0 top-11 z-20 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                            <div className="py-1">
+                                <Link
+                                    to="/new-group"
+                                    onClick={() => setIsKebabDropdownOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                                >
+                                    <Users size={15} className="text-gray-400" />
+                                    New Group
+                                </Link>
+                                <button
+                                    onClick={() => setIsKebabDropdownOpen(false)}
+                                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
+                                >
+                                    <Bell size={15} className="text-gray-400" />
+                                    Notifications
+                                </button>
+                                
+                                <div className="border-t border-gray-100 mt-1 pt-1">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-red-50 text-sm text-red-500 transition-colors"
+                                    >
+                                        <LogOut size={15} />
+                                        Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {isDropdownOpen && (
-                <div ref={dropdownRef} className="absolute left-[70px] top-5 z-10 w-48 bg-white shadow-lg rounded-lg overflow-hidden">
-                    <div className="p-3 border-b">
-                        <p className="text-gray-900 font-semibold text-sm">{authUser?.name || "User"}</p>
-                        <p className="text-gray-500 text-xs">{authUser?.email || "email@example.com"}</p>
-                    </div>
-                    <ul className="text-gray-700">
-                        <li>
-                            <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                                Profile
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/settings" className="block px-4 py-2 hover:bg-gray-100 text-sm">
-                                Settings
-                            </Link>
-                        </li>
-                        <li>
-                            <button
-                                onClick={handleLogout}
-                                className="block w-full text-left px-4 py-2 hover:bg-red-100 text-sm text-red-500"
-                            >
-                                Logout
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            )}
-
+            {/* Search */}
             <div className="relative mt-4">
-                <IoSearchSharp className=" absolute top-3 left-3 text-gray-800 text-xl cursor-pointer hover:text-gray-300" />
+                <IoSearchSharp className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400 text-lg" />
                 <input
                     type="text"
                     placeholder="Search users..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="w-full border-gray-200 border bg-white p-2 pl-10 rounded outline-none"
+                    className="w-full border border-gray-200 bg-white py-2 pl-10 pr-4 rounded-xl outline-none focus:ring-2 focus:ring-blue-400 transition-all text-sm"
                 />
             </div>
+
+            {/* Conversations */}
             <div className="mt-6 text-white flex-col">
                 {filteredConversations.length > 0 ? (
                     filteredConversations.map((user, idx) => (
-                        <Conversation key={user._id} user={user} lastIdx={idx==filteredConversations.length - 1}/>
+                        <Conversation key={user._id} user={user} lastIdx={idx === filteredConversations.length - 1} />
                     ))
                 ) : (
-                    <p className="text-center text-white mt-5">No conversations found.</p>
+                    <p className="text-center text-gray-400 mt-5 text-sm">No conversations found.</p>
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Sidebar
+export default Sidebar;
