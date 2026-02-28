@@ -10,29 +10,10 @@ const userRoutes = require("./routes/UserRoutes");
 
 const { app, server } = require("./socket/Socket");
 
-// app.use(cors({
-//     origin: "https://chatify-talks.vercel.app", credentials: true, allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"]
-// })); // Adjust for frontend origin
-// // app.options("*", cors()); 
-
 app.use(cors({
     origin: 'http://localhost:5173', // Vite's default port
     credentials: true,              // Allow cookies
   }));
-
-// app.use((req, res, next) => {
-//     if (req.method === "OPTIONS") {
-//         res.header("Access-Control-Allow-Origin", "https://chatify-talks.vercel.app");
-//         res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//         res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//         res.header("Access-Control-Allow-Credentials", "true");
-//         return res.status(204).send(); // No content for OPTIONS requests
-//     }
-//     next();
-// });
-
-
 
 app.use(express.json());
 
