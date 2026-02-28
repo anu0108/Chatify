@@ -8,7 +8,7 @@ import useGetMessages from "../hooks/useGetMessages.ts";
 import Message from "./Message.tsx";
 import useListenMessages from "../hooks/useListenMessages.ts";
 import moment from "moment";
-import InitialAvatar from "../utils/initialAvatar.tsx";
+import InitialAvatar from "../utils/InitialAvatar.tsx";
 
 const MessageContainer = () => {
     const [message, setMessage] = useState<string>("");
