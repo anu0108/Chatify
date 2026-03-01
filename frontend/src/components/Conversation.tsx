@@ -19,9 +19,7 @@ const Conversation: React.FC<ConversationProps> = ({ user, lastIdx }) => {
 
     const { onlineUsers } = useSocketContext();
 	const isOnline = onlineUsers.includes(user._id);
-
-    console.log("online users", onlineUsers)
-
+    
     return (
         <>
             <div

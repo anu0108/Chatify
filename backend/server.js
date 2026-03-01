@@ -2,7 +2,6 @@ require("dotenv").config();
 const path = require("path")
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/AuthRoutes");
 const messageRoutes = require("./routes/MessageRoutes");
@@ -10,19 +9,9 @@ const userRoutes = require("./routes/UserRoutes");
 
 const { app, server } = require("./socket/Socket");
 
-// app.use(cors({
-//     origin: 'http://localhost:5173', // Vite's default port
-//     credentials: true,              // Allow cookies
-//   }));
-
 app.use(express.json());
 
 app.use(cookieParser());
-
-// app.get("/", (req, res) => {
-//     res.status(200).json({ message: "Server is up and running!" });
-// });
-
 
 app.use("/auth", authRoutes);
 app.use("/message", messageRoutes)
