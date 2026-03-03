@@ -22,8 +22,7 @@ export const SocketContextProvider = ({ children }: { children: React.ReactNode 
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const { authUser } = useAuthContext();
 
-  const url = "http://localhost:8080"
-
+  const url = import.meta.env.VITE_BACKEND_URL
   useEffect(() => {
     if (authUser) {
       const newSocket = io(url, {
