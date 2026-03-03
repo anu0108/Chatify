@@ -7,19 +7,24 @@ import useSendMessage from "../hooks/useSendMessage.ts"
 import useGetMessages from "../hooks/useGetMessages.ts";
 import Message from "./Message.tsx";
 import useListenMessages from "../hooks/useListenMessages.ts";
+import useListenTyping from "../hooks/useListenTyping.ts";
+import { useSocketContext } from "../context/SocketContext";
 import moment from "moment";
 import InitialAvatar from "../utils/InitialAvatar.tsx";
 
 const MessageContainer = () => {
     const [message, setMessage] = useState<string>("");
-    const { selectedConversation, setSelectedConversation } = useConversation();
+    const { selectedConversation, setSelectedConversation, isTyping } = useConversation();
+    const { socket } = useSocketContext();
 
     const { sendMessage } = useSendMessage();
 
     const { messages } = useGetMessages();
     useListenMessages();
+    useListenTyping();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
     useEffect(() => {
@@ -44,10 +49,21 @@ const MessageContainer = () => {
             messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMessage(e.target.value);
+        socket?.emit("typing", { receiverId: selectedConversation?._id });
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => {
+            socket?.emit("stopTyping", { receiverId: selectedConversation?._id });
+        }, 1500);
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!message) return;
 
+        socket?.emit("stopTyping", { receiverId: selectedConversation?._id });
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         await sendMessage(message);
         setMessage("")
     }
@@ -115,12 +131,23 @@ const MessageContainer = () => {
 
 
 
+                    {/* Typing Indicator */}
+                    {isTyping && (
+                        <div className="flex items-center gap-1 px-4 py-2">
+                            <div className="bg-gray-200 rounded-full px-3 py-2 flex gap-1">
+                                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]" />
+                                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:300ms]" />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Chat Input Box */}
                     <form className="h-16 bg-white flex items-center px-2 relative" onSubmit={handleSubmit}>
                         <input
                             type="text"
                             value={message}
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={handleInputChange}
                             className="bg-gray-200 text-sm w-full p-3 rounded-lg outline-none"
                             placeholder="Type your message..."
 

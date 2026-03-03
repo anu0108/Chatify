@@ -21,7 +21,8 @@ interface ConversationState {
     messages: Message[];
     // setMessages: (messages: Message[]) => void;
     setMessages: (messages: Message[] | ((prevMessages: Message[]) => Message[])) => void; // ✅ Ensure it allows function updates
-
+    isTyping: boolean;
+    setIsTyping: (val: boolean) => void;
 }
 
 const useConversation = create<ConversationState>((set) => ({
@@ -31,6 +32,9 @@ const useConversation = create<ConversationState>((set) => ({
     setMessages: (messages) =>
         set((state) => ({
           messages: typeof messages === "function" ? messages(state.messages) : messages, // ✅ Correct handling
-        })),}));
+        })),
+    isTyping: false,
+    setIsTyping: (val) => set({ isTyping: val }),
+}));
 
 export default useConversation;
