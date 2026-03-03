@@ -25,6 +25,7 @@ const MessageContainer = () => {
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isTypingRef = useRef(false);
 
 
     useEffect(() => {
@@ -51,10 +52,14 @@ const MessageContainer = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value);
-        socket?.emit("typing", { receiverId: selectedConversation?._id });
+        if (!isTypingRef.current) {
+            socket?.emit("typing", { receiverId: selectedConversation?._id });
+            isTypingRef.current = true;
+        }
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = setTimeout(() => {
             socket?.emit("stopTyping", { receiverId: selectedConversation?._id });
+            isTypingRef.current = false;
         }, 1500);
     };
 
@@ -63,6 +68,7 @@ const MessageContainer = () => {
         if (!message) return;
 
         socket?.emit("stopTyping", { receiverId: selectedConversation?._id });
+        isTypingRef.current = false;
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         await sendMessage(message);
         setMessage("")
