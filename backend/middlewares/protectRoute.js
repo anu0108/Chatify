@@ -1,17 +1,18 @@
 const UserModel = require("../models/User")
 const jwt = require("jsonwebtoken");
+const logger = require("../logger");
 
 require("dotenv").config()
 
 module.exports.protectRoute = async (req, res, next) => {
 	try {
-		const token = req.cookies.jwt;
+		const token = req.cookies.accessToken;
 
 		if (!token) {
 			return res.status(401).json({ error: "Unauthorized - No Token Provided" });
 		}
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+		const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
 
 		if (!decoded) {
 			return res.status(401).json({ error: "Unauthorized - Invalid Token" });
@@ -27,7 +28,10 @@ module.exports.protectRoute = async (req, res, next) => {
 
 		next();
 	} catch (error) {
-		console.log("Error in protectRoute middleware: ", error.message);
-		res.status(500).json({ error: "Internal server error" });
-	}
+      if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
+          return res.status(401).json({ error: "Unauthorized - Token expired or invalid" });
+      }
+      logger.error("Error in protectRoute middleware: ", error.message);
+      res.status(500).json({ error: "Internal server error" });
+  }
 };

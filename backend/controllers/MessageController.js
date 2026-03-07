@@ -1,6 +1,7 @@
 const ConversationModel = require("../models/Conversation")
 const MessageModel = require("../models/Message");
 const { getReceiverSocketId, io } = require("../socket/Socket");
+const logger = require("../logger");
 
 module.exports.sendMessage = async (req, res) => {
     try {
@@ -36,7 +37,7 @@ module.exports.sendMessage = async (req, res) => {
 
         res.status(201).json(newMessage);
     } catch (err) {
-        console.log("Error in sendMessage Controller", err.message);
+        logger.error("Error in sendMessage Controller", err.message);
         res.status(500).json({ error: "INTERNAL SERVER ERROR" })
     }
 }
@@ -56,7 +57,7 @@ module.exports.getMessages = async (req, res) => {
 
 		res.status(200).json(messages);
     } catch (err) {
-        console.log("Error ib getMessage Controller", err.message);
+        logger.error("Error in getMessage Controller", err.message);
         res.status(500).json({error: "INTERNAL SERVER ERROR"})
     }
 }

@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
+const logger = require("../logger");
 
 const app = express();
 const server = http.createServer(app);
@@ -20,7 +21,7 @@ const getReceiverSocketId = (receiverId) => {
 };
 
 io.on("connection", (socket) => {
-	console.log("✅ A user connected:", socket.id);
+	logger.info(`A user connected: ${socket.id}`);
 
 	const userId = socket.handshake.query.userId;
 	if (userId) {
@@ -46,7 +47,7 @@ io.on("connection", (socket) => {
 
 	// Handle user disconnect
 	socket.on("disconnect", () => {
-		console.log("❌ User disconnected:", socket.id);
+		logger.info(`User disconnected: ${socket.id}`);
 		if (userId && userSocketMap[userId]) {
 			delete userSocketMap[userId];
 		}

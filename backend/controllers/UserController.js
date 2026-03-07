@@ -1,4 +1,5 @@
 const UserModel = require("../models/User")
+const logger = require("../logger");
 
 module.exports.getUsersForSidebar = async (req, res) => {
     try {
@@ -8,7 +9,7 @@ module.exports.getUsersForSidebar = async (req, res) => {
 
         res.status(200).json(filteredUsers);
     } catch (error) {
-        console.error("Error in getUsersForSidebar: ", error.message);
+        logger.error("Error in getUsersForSidebar: ", error.message);
         res.status(500).json({ error: "Internal server error" });
     }
 }

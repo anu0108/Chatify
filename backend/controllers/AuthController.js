@@ -2,8 +2,17 @@ require("dotenv").config();
 const UserModel = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const logger = require("../logger");
 
-module.exports.checkAuthStatus = (req,res) => {
+const generateTokens = (userId, res) => {
+    const accessToken = jwt.sign({ id: userId }, process.env.JWT_ACCESS_SECRET, { expiresIn: "15m" });
+    const refreshToken = jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+
+    res.cookie("accessToken", accessToken, { maxAge: 15 * 60 * 1000, httpOnly: true, sameSite: "None", secure: true });
+    res.cookie("refreshToken", refreshToken, { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: "None", secure: true });
+}
+
+module.exports.checkAuthStatus = (req, res) => {
     res.json({ user: req.user });
 }
 
@@ -15,37 +24,25 @@ module.exports.Register = async (req, res) => {
             return res.status(400).json({ success: false, message: "All fields are required!" });
         }
 
-        const existingUser = await UserModel.findOne({ 
-          $or: [{ email }, { mobile }] // Check both fields
+        const existingUser = await UserModel.findOne({
+            $or: [{ email }, { mobile }] // Check both fields
         });
-    
+
         if (existingUser) {
-          if (existingUser.email === email) {
-            return res.status(400).json({ success: false, message: "Email is already registered!" });
-          } else {
-            return res.status(400).json({ success: false, message: "Mobile number is already registered!" });
-          }
+            if (existingUser.email === email) {
+                return res.status(400).json({ success: false, message: "Email is already registered!" });
+            } else {
+                return res.status(400).json({ success: false, message: "Mobile number is already registered!" });
+            }
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = await UserModel.create({ name, email, password: hashedPassword, mobile });
 
-        const token = jwt.sign(
-            { id: newUser._id },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: "3d" }
-        );
-
-        res.cookie("jwt", token, {
-            maxAge: 15 * 24 * 60 * 60 * 1000, // MS
-            httpOnly: true, // prevent XSS attacks cross-site scripting attacks
-            sameSite: "None", // CSRF attacks cross-site request forgery attacks
-            secure: true,
-        });
-
+        generateTokens(newUser._id, res);
         res.status(201).json({ success: true, message: "User Registered Successfully!" });
     } catch (error) {
-        console.error("Error in Register:", error);
+        logger.error("Error in Register:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
@@ -68,32 +65,38 @@ module.exports.Login = async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid email or password" });
         }
 
-        const token = jwt.sign(
-            { id: foundUser._id },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: "3d" }
-        );
-
-        res.cookie("jwt", token, {
-            maxAge: 15 * 24 * 60 * 60 * 1000, // MS
-            httpOnly: true, // prevent XSS attacks cross-site scripting attacks
-            sameSite: "None", 
-            secure: true,
-        });
-
-        res.status(200).json({ success: true, message: "Login successful", user:foundUser });
+        generateTokens(foundUser._id, res);
+        res.status(200).json({ success: true, message: "Login successful", user: foundUser });
     } catch (error) {
-        console.error("Error in Login:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error",  });
+        logger.error("Error in Login:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error", });
     }
 };
 
 module.exports.Logout = (req, res) => {
-    try {
-		res.cookie("jwt", "", { maxAge: 0 });
-		res.status(200).json({ message: "Logged out successfully" });
-	} catch (error) {
-		console.log("Error in logout controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
-	}
-}
+      try {
+          res.cookie("accessToken", "", { maxAge: 0 });
+          res.cookie("refreshToken", "", { maxAge: 0 });
+          res.status(200).json({ message: "Logged out successfully" });
+      } catch (error) {
+          logger.error("Error in logout controller", error.message);
+          res.status(500).json({ error: "Internal Server Error" });
+      }
+  };
+
+  module.exports.refreshAccessToken = (req, res) => {
+      try {
+          const token = req.cookies.refreshToken;
+          if (!token) return res.status(401).json({ error: "No refresh token" });
+
+          const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+          const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "15m" });
+
+          res.cookie("accessToken", newAccessToken, { maxAge: 15 * 60 * 1000, httpOnly: true, sameSite: "None", secure: true });
+          res.status(200).json({ success: true });
+      } catch (error) {
+          logger.error("Error in refreshAccessToken:", error.message);
+          res.status(403).json({ error: "Invalid or expired refresh token" });
+      }
+  };
+

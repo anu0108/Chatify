@@ -1,6 +1,7 @@
 require("dotenv").config();
 const path = require("path")
 const express = require("express");
+const logger = require("./logger");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/AuthRoutes");
@@ -27,5 +28,5 @@ app.get("*", (req, res) => {
 mongoose.connect(process.env.MONGO_DB_URI)
 
 server.listen(8080, () => {
-    console.log('Server running on PORT 8080');
+    logger.info('Server running on PORT 8080');
 })

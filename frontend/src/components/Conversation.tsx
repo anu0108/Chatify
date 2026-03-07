@@ -13,23 +13,24 @@ interface ConversationProps {
 }
 
 const Conversation: React.FC<ConversationProps> = ({ user, lastIdx }) => {
-    const { selectedConversation, setSelectedConversation } = useConversation();
+    const { selectedConversation, setSelectedConversation, unreadCounts, clearUnread } = useConversation();
 
     const isSelected = user._id === selectedConversation?._id;
+    const unreadCount = unreadCounts[user._id] || 0;
 
     const { onlineUsers } = useSocketContext();
-	const isOnline = onlineUsers.includes(user._id);
-    
+    const isOnline = onlineUsers.includes(user._id);
+
     return (
         <>
             <div
-                className={`flex gap-4 items-center text-gray-900 hover:bg-violet-300 cursor-pointer py-2 px-2 rounded 
+                className={`flex gap-4 items-center text-gray-900 hover:bg-violet-300 cursor-pointer py-2 px-2 rounded
                 ${isSelected ? "bg-violet-600" : ""}`}
-                onClick={() => 
-                    {
-                        setSelectedConversation(user);
-                        localStorage.setItem("selectedConversation", JSON.stringify(user));
-                    }}
+                onClick={() => {
+                    setSelectedConversation(user);
+                    clearUnread(user._id);
+                    localStorage.setItem("selectedConversation", JSON.stringify(user));
+                }}
             >
                <div className="relative">
                     <FaUserCircle className={`text-5xl ${isSelected ? "text-white" : "text-gray-600"}`} />
@@ -41,7 +42,11 @@ const Conversation: React.FC<ConversationProps> = ({ user, lastIdx }) => {
                     <div>
                         <p className={`${isSelected ? "text-white" : ""}`}>{user.name}</p>
                     </div>
-                   
+                    {unreadCount > 0 && (
+                        <span className="bg-violet-600 text-white text-xs font-semibold rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+                            {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                    )}
                 </div>
             </div>
             {!lastIdx && <div className="border-t border-gray-300 " />}

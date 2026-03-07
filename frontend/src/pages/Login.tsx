@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext";
 import { MessageCircle, Mail, Lock } from "lucide-react";
 import Typewriter from "typewriter-effect";
+import axiosInstance from "../utils/axiosInstance";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/auth/login`,
         { email, password },
         { withCredentials: true }

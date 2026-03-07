@@ -1,9 +1,7 @@
 import { useState } from "react";
 import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
-import axios from "axios";
-
-
+import axiosInstance from "../utils/axiosInstance";
 
 const useSendMessage = () => {
     const [loading, setLoading] = useState(false);
@@ -12,7 +10,7 @@ const useSendMessage = () => {
     const sendMessage = async (message:any) => {
         setLoading(true);
         try {
-            const res = await axios.post(`/message/send/${selectedConversation?._id}`,{message}, {withCredentials:true});
+            const res = await axiosInstance.post(`/message/send/${selectedConversation?._id}`,{message}, {withCredentials:true});
             const data = res.data; 
             if (data.error) throw new Error(data.error);
 

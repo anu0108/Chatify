@@ -8,21 +8,25 @@ interface Conversation {
 }
 
 interface Message {
-    _id: string; // Ensure messages have an ID
+    _id: string;
     senderId: string;
     receiverId: string;
     message: string;
-    createdAt: string; // Ensure messages have a timestamp
+    createdAt: string;
 }
 
 interface ConversationState {
     selectedConversation: Conversation | null;
     setSelectedConversation: (conversation: Conversation | null) => void;
     messages: Message[];
-    // setMessages: (messages: Message[]) => void;
-    setMessages: (messages: Message[] | ((prevMessages: Message[]) => Message[])) => void; // ✅ Ensure it allows function updates
+    setMessages: (messages: Message[] | ((prevMessages: Message[]) => Message[])) => void;
     isTyping: boolean;
     setIsTyping: (val: boolean) => void;
+    unreadCounts: Record<string, number>;
+    incrementUnread: (userId: string) => void;
+    clearUnread: (userId: string) => void;
+    users: Conversation[];
+    setUsers: (users: Conversation[]) => void;
 }
 
 const useConversation = create<ConversationState>((set) => ({
@@ -31,10 +35,24 @@ const useConversation = create<ConversationState>((set) => ({
     messages: [],
     setMessages: (messages) =>
         set((state) => ({
-          messages: typeof messages === "function" ? messages(state.messages) : messages, // ✅ Correct handling
+            messages: typeof messages === "function" ? messages(state.messages) : messages,
         })),
     isTyping: false,
     setIsTyping: (val) => set({ isTyping: val }),
+    unreadCounts: {},
+    incrementUnread: (userId) =>
+        set((state) => ({
+            unreadCounts: {
+                ...state.unreadCounts,
+                [userId]: (state.unreadCounts[userId] || 0) + 1,
+            },
+        })),
+    clearUnread: (userId) =>
+        set((state) => ({
+            unreadCounts: { ...state.unreadCounts, [userId]: 0 },
+        })),
+    users: [],
+    setUsers: (users) => set({ users }),
 }));
 
 export default useConversation;

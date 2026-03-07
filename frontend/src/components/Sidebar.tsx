@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { IoSearchSharp } from 'react-icons/io5';
 import UserLoggedIn from "../assets/Anurag.png"
-import { CiMenuKebab } from 'react-icons/ci';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
-import axios from 'axios';
 import Conversation from './Conversation';
-import { LogOut, Settings, User, Users, Bell } from 'lucide-react';
+import { LogOut, Settings, User } from 'lucide-react';
+import useConversation from '../zustand/useConversation';
+import axiosInstance from '../utils/axiosInstance';
 
 interface User {
     _id: string;
@@ -18,18 +18,18 @@ interface User {
 const Sidebar = () => {
     const [search, setSearch] = useState("");
     const [isAvatarDropdownOpen, setIsAvatarDropdownOpen] = useState(false);
-    const [isKebabDropdownOpen, setIsKebabDropdownOpen] = useState(false);
     const [conversations, setConversations] = useState<User[]>([]);
     const avatarDropdownRef = useRef<HTMLDivElement | null>(null);
-    const kebabDropdownRef = useRef<HTMLDivElement | null>(null);
     const { authUser, setAuthUser } = useAuthContext();
     const navigate = useNavigate();
+    const { setUsers } = useConversation();
 
     useEffect(() => {
         const getConversations = async () => {
             try {
-                const res = await axios.get<User[]>(`/users`, { withCredentials: true });
+                const res = await axiosInstance.get<User[]>(`/users`, { withCredentials: true });
                 setConversations(res.data);
+                setUsers(res.data);
             } catch (err) {
                 console.error("Error fetching users:", err);
             }
@@ -42,9 +42,6 @@ const Sidebar = () => {
             if (avatarDropdownRef.current && !avatarDropdownRef.current.contains(event.target as Node)) {
                 setIsAvatarDropdownOpen(false);
             }
-            if (kebabDropdownRef.current && !kebabDropdownRef.current.contains(event.target as Node)) {
-                setIsKebabDropdownOpen(false);
-            }
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -56,7 +53,7 @@ const Sidebar = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post(`/auth/logout`, {}, { withCredentials: true });
+            await axiosInstance.post(`/auth/logout`, {}, { withCredentials: true });
             setAuthUser(null);
             navigate("/login");
         } catch (err) {
@@ -81,7 +78,6 @@ const Sidebar = () => {
                         className="w-11 h-11 object-cover rounded-full cursor-pointer ring-2 ring-blue-400 hover:ring-blue-600 transition-all"
                         onClick={() => {
                             setIsAvatarDropdownOpen((prev) => !prev);
-                            setIsKebabDropdownOpen(false);
                         }}
                     />
 
@@ -129,52 +125,7 @@ const Sidebar = () => {
                             </div>
                         </div>
                     )}
-                </div>
-
-                {/* Kebab + dropdown */}
-                <div className="relative" ref={kebabDropdownRef}>
-                    <button
-                        className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                        onClick={() => {
-                            setIsKebabDropdownOpen((prev) => !prev);
-                            setIsAvatarDropdownOpen(false);
-                        }}
-                    >
-                        <CiMenuKebab className="text-gray-600 text-xl" />
-                    </button>
-
-                    {isKebabDropdownOpen && (
-                        <div className="absolute right-0 top-11 z-20 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                            <div className="py-1">
-                                <Link
-                                    to="/new-group"
-                                    onClick={() => setIsKebabDropdownOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
-                                >
-                                    <Users size={15} className="text-gray-400" />
-                                    New Group
-                                </Link>
-                                <button
-                                    onClick={() => setIsKebabDropdownOpen(false)}
-                                    className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors"
-                                >
-                                    <Bell size={15} className="text-gray-400" />
-                                    Notifications
-                                </button>
-                                
-                                <div className="border-t border-gray-100 mt-1 pt-1">
-                                    <button
-                                        onClick={handleLogout}
-                                        className="flex items-center gap-3 w-full px-4 py-2.5 hover:bg-red-50 text-sm text-red-500 transition-colors"
-                                    >
-                                        <LogOut size={15} />
-                                        Logout
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                </div>                
             </div>
 
             {/* Search */}

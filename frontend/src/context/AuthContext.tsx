@@ -1,5 +1,5 @@
-import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react"
+import axiosInstance from "../utils/axiosInstance";
 
 type User = {
     _id: string;
@@ -31,8 +31,7 @@ type User = {
   
     const checkAuthStatus = async () => {
       try {
-        const res = await axios.get(`/auth/me`, { withCredentials: true });
-        console.log(res.data)
+        const res = await axiosInstance.get(`/auth/me`, { withCredentials: true });
         setAuthUser(res.data.user);
       } catch (error) {
         setAuthUser(null);

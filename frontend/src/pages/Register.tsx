@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Mail, Lock, User, MessageCircle } from "lucide-react";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../utils/axiosInstance";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -18,7 +19,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(
+      const res = await axiosInstance.post(
         `/auth/register`,
         {
           name,
