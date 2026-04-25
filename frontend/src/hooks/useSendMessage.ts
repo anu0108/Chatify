@@ -3,6 +3,8 @@ import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
 import axiosInstance from "../utils/axiosInstance";
 
+let msgCount = 0;
+
 const useSendMessage = () => {
     const [loading, setLoading] = useState(false);
     const { messages, setMessages, selectedConversation } = useConversation();
@@ -10,8 +12,11 @@ const useSendMessage = () => {
     const sendMessage = async (message:any) => {
         setLoading(true);
         try {
+            const start = performance.now();
             const res = await axiosInstance.post(`/message/send/${selectedConversation?._id}`,{message}, {withCredentials:true});
-            const data = res.data; 
+            const latency = Math.round(performance.now() - start);
+            console.log(`[latency] message ${++msgCount}: ${latency}ms`);
+            const data = res.data;
             if (data.error) throw new Error(data.error);
 
             setMessages([...messages, data]);
