@@ -5,7 +5,7 @@ const logger = require("../logger");
 
 module.exports.sendMessage = async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, sentAt } = req.body;
         const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
@@ -32,7 +32,7 @@ module.exports.sendMessage = async (req, res) => {
         const receiverSocketId = getReceiverSocketId(receiverId);
 		if (receiverSocketId) {
 			// io.to(<socket_id>).emit() used to send events to specific client
-			io.to(receiverSocketId).emit("newMessage", newMessage);
+			io.to(receiverSocketId).emit("newMessage", { ...newMessage.toObject(), sentAt });
 		}
 
         res.status(201).json(newMessage);

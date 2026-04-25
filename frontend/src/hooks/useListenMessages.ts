@@ -26,6 +26,9 @@ const useListenMessages = () => {
 
     useEffect(() => {
         const handleNewMessage = (newMessage: any) => {
+            if (newMessage.sentAt) {
+                console.log(`[e2e-latency] ${Date.now() - newMessage.sentAt}ms`);
+            }
             newMessage.shouldShake = true;
 
             const isFromActiveConversation = newMessage.senderId === selectedConversation?._id;

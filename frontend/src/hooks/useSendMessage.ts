@@ -13,9 +13,10 @@ const useSendMessage = () => {
         setLoading(true);
         try {
             const start = performance.now();
-            const res = await axiosInstance.post(`/message/send/${selectedConversation?._id}`,{message}, {withCredentials:true});
+            const sentAt = Date.now();
+            const res = await axiosInstance.post(`/message/send/${selectedConversation?._id}`,{message, sentAt}, {withCredentials:true});
             const latency = Math.round(performance.now() - start);
-            console.log(`[latency] message ${++msgCount}: ${latency}ms`);
+            console.log(`[round-trip] message ${++msgCount}: ${latency}ms`);
             const data = res.data;
             if (data.error) throw new Error(data.error);
 
