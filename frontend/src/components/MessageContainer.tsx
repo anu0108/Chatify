@@ -8,6 +8,7 @@ import useGetMessages from "../hooks/useGetMessages.ts";
 import Message from "./Message.tsx";
 import useListenMessages from "../hooks/useListenMessages.ts";
 import useListenTyping from "../hooks/useListenTyping.ts";
+import useSmartReplies from "../hooks/useSmartReplies.ts";
 import { useSocketContext } from "../context/SocketContext";
 import moment from "moment";
 import InitialAvatar from "../utils/InitialAvatar.tsx";
@@ -22,6 +23,7 @@ const MessageContainer = () => {
     const { messages } = useGetMessages();
     useListenMessages();
     useListenTyping();
+    const { suggestions, loading: suggestionsLoading, clearSuggestions } = useSmartReplies();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,9 +72,15 @@ const MessageContainer = () => {
         socket?.emit("stopTyping", { receiverId: selectedConversation?._id });
         isTypingRef.current = false;
         if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+        clearSuggestions();
         await sendMessage(message);
         setMessage("")
     }
+
+    const handleSuggestionClick = (suggestion: string) => {
+        setMessage(suggestion);
+        clearSuggestions();
+    };
 
     const groupMessagesByDate = () => {
         const groupedMessages: { [key: string]: any } = {};
@@ -148,6 +156,22 @@ const MessageContainer = () => {
                         </div>
                     )}
 
+                    {/* Smart Reply Suggestions */}
+                    {suggestions.length > 0 && (
+                        <div className="flex items-center gap-2 px-3 py-2 bg-white border-t border-gray-100 flex-wrap">
+                            {suggestions.map((s, i) => (
+                                <button
+                                    key={i}
+                                    type="button"
+                                    onClick={() => handleSuggestionClick(s)}
+                                    className="text-xs px-3 py-1.5 rounded-full border border-violet-300 text-violet-700 bg-violet-50 hover:bg-violet-100 transition-colors whitespace-nowrap"
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
                     {/* Chat Input Box */}
                     <form className="h-16 bg-white flex items-center px-2 relative" onSubmit={handleSubmit}>
                         <input
@@ -156,7 +180,6 @@ const MessageContainer = () => {
                             onChange={handleInputChange}
                             className="bg-gray-200 text-sm w-full p-3 rounded-lg outline-none"
                             placeholder="Type your message..."
-
                         />
                         <button
                             className="ml-2 text-blue-500 text-lg" type="submit"

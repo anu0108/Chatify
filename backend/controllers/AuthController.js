@@ -74,29 +74,29 @@ module.exports.Login = async (req, res) => {
 };
 
 module.exports.Logout = (req, res) => {
-      try {
-          res.cookie("accessToken", "", { maxAge: 0 });
-          res.cookie("refreshToken", "", { maxAge: 0 });
-          res.status(200).json({ message: "Logged out successfully" });
-      } catch (error) {
-          logger.error("Error in logout controller", error.message);
-          res.status(500).json({ error: "Internal Server Error" });
-      }
-  };
+    try {
+        res.cookie("accessToken", "", { maxAge: 0 });
+        res.cookie("refreshToken", "", { maxAge: 0 });
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        logger.error("Error in logout controller", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
-  module.exports.refreshAccessToken = (req, res) => {
-      try {
-          const token = req.cookies.refreshToken;
-          if (!token) return res.status(401).json({ error: "No refresh token" });
+module.exports.refreshAccessToken = (req, res) => {
+    try {
+        const token = req.cookies.refreshToken;
+        if (!token) return res.status(401).json({ error: "No refresh token" });
 
-          const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-          const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "15m" });
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+        const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_SECRET, { expiresIn: "15m" });
 
-          res.cookie("accessToken", newAccessToken, { maxAge: 15 * 60 * 1000, httpOnly: true, sameSite: "None", secure: true });
-          res.status(200).json({ success: true });
-      } catch (error) {
-          logger.error("Error in refreshAccessToken:", error.message);
-          res.status(403).json({ error: "Invalid or expired refresh token" });
-      }
-  };
+        res.cookie("accessToken", newAccessToken, { maxAge: 15 * 60 * 1000, httpOnly: true, sameSite: "None", secure: true });
+        res.status(200).json({ success: true });
+    } catch (error) {
+        logger.error("Error in refreshAccessToken:", error.message);
+        res.status(403).json({ error: "Invalid or expired refresh token" });
+    }
+};
 

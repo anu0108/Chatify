@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { IoSearchSharp } from 'react-icons/io5';
-import UserLoggedIn from "../assets/Anurag.png"
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import Conversation from './Conversation';
@@ -72,14 +71,14 @@ const Sidebar = () => {
 
                 {/* Avatar + dropdown */}
                 <div className="relative" ref={avatarDropdownRef}>
-                    <img
-                        src={UserLoggedIn}
-                        alt="avatar"
-                        className="w-11 h-11 object-cover rounded-full cursor-pointer ring-2 ring-blue-400 hover:ring-blue-600 transition-all"
+                    <div
+                        className="w-11 h-11 rounded-full cursor-pointer ring-2 ring-blue-400 hover:ring-blue-600 transition-all bg-gray-200 flex items-center justify-center"
                         onClick={() => {
                             setIsAvatarDropdownOpen((prev) => !prev);
                         }}
-                    />
+                    >
+                        <User size={20} className="text-gray-500" />
+                    </div>
 
                     {isAvatarDropdownOpen && (
                         <div className="absolute left-0 top-14 z-20 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
