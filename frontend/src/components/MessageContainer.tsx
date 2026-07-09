@@ -23,7 +23,7 @@ const MessageContainer = () => {
     const { messages } = useGetMessages();
     useListenMessages();
     useListenTyping();
-    const { suggestions, loading: suggestionsLoading, clearSuggestions } = useSmartReplies();
+    const { suggestions, clearSuggestions } = useSmartReplies();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
